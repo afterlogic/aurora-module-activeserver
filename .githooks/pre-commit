@@ -47,12 +47,12 @@ if [ -f "$CSFIXER" ]; then
     echo ""
     echo "Running CS Fixer..."
 
-    eval "php $CSFIXER fix ./ --rules=@PER --dry-run"
+    eval "php $CSFIXER fix ./ --rules=@PER --dry-run --using-cache=no"
 
     if [ $? != 0 ]
     then
         echo "Fix formatting issues before commit."
-        echo "Run: 'php $CSFIXER fix ./ --rules=@PER'"
+        echo "Run: 'php $CSFIXER fix ./ --rules=@PER --using-cache=no'"
         exit 1
     fi
 fi
