@@ -69,7 +69,7 @@ class Module extends \Aurora\System\Module\AbstractModule
     {
         $iUserId = isset($mResult) && (int) $mResult > 0 ? (int) $mResult : 0;
         if ($iUserId > 0) {
-            $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($iUserId);
+            $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($iUserId);
 
             if ($oUser) {
                 if ($this->getFreeUsersSlots() < 1) {
@@ -127,7 +127,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 
         $iUserId = \Aurora\System\Api::getAuthenticatedUserId();
         if ($iUserId) {
-            $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($iUserId);
+            $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($iUserId);
             if ($oUser) {
                 $bResult = $oUser->{self::GetName() . '::Enabled'};
             }
@@ -141,7 +141,7 @@ class Module extends \Aurora\System\Module\AbstractModule
     {
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 
-        $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($UserId);
+        $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($UserId);
         if ($oUser) {
             return array(
                 'EnableModule' => $oUser->{self::GetName() . '::Enabled'}
@@ -156,7 +156,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         $bResult = false;
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 
-        $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($UserId);
+        $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($UserId);
 
         $oLicensing = \Aurora\System\Api::GetModule('Licensing');
         $iLicensedUsersCount = (int) $oLicensing->GetUsersCount('ActiveServer');
@@ -188,7 +188,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 
         $iUserId = \Aurora\System\Api::getAuthenticatedUserId();
         if ($iUserId) {
-            $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($iUserId);
+            $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($iUserId);
             if ($oUser) {
                 $bEnableModuleForUser = $oUser->{self::GetName() . '::Enabled'};
             }
