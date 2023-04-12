@@ -34,6 +34,8 @@ class Module extends \Aurora\System\Module\AbstractModule
     protected function getFreeUsersSlots()
     {
         $mResult = 0;
+
+        /** @var \Aurora\Modules\Licensing\Module */
         $oLicensing = \Aurora\System\Api::GetModule('Licensing');
         if ($oLicensing->IsTrial('ActiveServer') || $oLicensing->IsUnlim('ActiveServer')) {
             $mResult = 1;
@@ -50,6 +52,8 @@ class Module extends \Aurora\System\Module\AbstractModule
         $sAgent = $this->oHttp->GetHeader('X-User-Agent');
         if ($sAgent === 'Afterlogic ActiveServer') {
             $oUser = \Aurora\System\Api::getAuthenticatedUser();
+
+            /** @var \Aurora\Modules\Licensing\Module */
             $oLicensing = \Aurora\System\Api::GetModule('Licensing');
 
             if (!$oLicensing->ValidatePeriod('ActiveServer')) {
@@ -157,7 +161,8 @@ class Module extends \Aurora\System\Module\AbstractModule
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 
         $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($UserId);
-
+        
+        /** @var \Aurora\Modules\Licensing\Module */
         $oLicensing = \Aurora\System\Api::GetModule('Licensing');
         $iLicensedUsersCount = (int) $oLicensing->GetUsersCount('ActiveServer');
         $iUsersCount = $this->GetUsersCount();
@@ -182,6 +187,7 @@ class Module extends \Aurora\System\Module\AbstractModule
     {
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 
+        /** @var \Aurora\Modules\Licensing\Module */
         $oLicensing = \Aurora\System\Api::GetModule('Licensing');
 
         $bEnableModuleForUser = false;
@@ -236,6 +242,7 @@ class Module extends \Aurora\System\Module\AbstractModule
     {
         $mResult = false;
 
+        /** @var \Aurora\Modules\Licensing\Module */
         $oLicensing = \Aurora\System\Api::GetModule('Licensing');
         if ($oLicensing) {
             $mResult = $oLicensing->GetLicenseInfo('ActiveServer');
