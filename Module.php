@@ -22,13 +22,21 @@ class Module extends \Aurora\System\Module\AbstractModule
         'Licensing'
     );
 
-
     public function init()
     {
         $this->subscribeEvent('Login::after', array($this, 'onAfterLogin'), 10);
         $this->subscribeEvent('Core::CreateUser::after', array($this, 'onAfterCreateUser'), 10);
         $this->subscribeEvent('Autodiscover::GetAutodiscover::after', array($this, 'onAfterGetAutodiscover'));
         $this->subscribeEvent('Licensing::UpdateSettings::after', array($this, 'onAfterUpdateLicensingSettings'));
+    }
+
+    /**
+     *
+     * @return Module
+     */
+    public static function Decorator()
+    {
+        return parent::Decorator();
     }
 
     protected function getFreeUsersSlots()
@@ -161,7 +169,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 
         $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($UserId);
-        
+
         /** @var \Aurora\Modules\Licensing\Module */
         $oLicensing = \Aurora\System\Api::GetModule('Licensing');
         $iLicensedUsersCount = (int) $oLicensing->GetUsersCount('ActiveServer');
