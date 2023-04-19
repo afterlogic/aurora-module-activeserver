@@ -91,6 +91,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         $iUserId = isset($mResult) && (int) $mResult > 0 ? (int) $mResult : 0;
         if ($iUserId > 0) {
             $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($iUserId);
+            $oSettings = $this->getModuleSettings();
 
             if ($oUser) {
                 if ($this->getFreeUsersSlots() < 1) {
@@ -98,8 +99,8 @@ class Module extends \Aurora\System\Module\AbstractModule
                         $oUser->setExtendedProp(self::GetName() . '::Enabled', false);
                         \Aurora\Modules\Core\Module::Decorator()->UpdateUserObject($oUser);
                     }
-                } elseif ($oUser->{self::GetName() . '::Enabled'} !== $this->getConfig('EnableForNewUsers')) {
-                    $oUser->setExtendedProp(self::GetName() . '::Enabled', $this->getConfig('EnableForNewUsers'));
+                } elseif ($oUser->{self::GetName() . '::Enabled'} !== $oSettings->EnableForNewUsers) {
+                    $oUser->setExtendedProp(self::GetName() . '::Enabled', $oSettings->EnableForNewUsers);
                     \Aurora\Modules\Core\Module::Decorator()->UpdateUserObject($oUser);
                 }
             }
@@ -109,6 +110,7 @@ class Module extends \Aurora\System\Module\AbstractModule
     public function onAfterGetAutodiscover(&$aArgs, &$mResult)
     {
         $sEmail = $aArgs['Email'];
+        $oSettings = $this->getModuleSettings();
 
         $sResult = \implode("\n", array(
 '		<Culture>en:us</Culture>',
@@ -120,8 +122,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 '            <Settings>',
 '                <Server>',
 '                    <Type>MobileSync</Type>',
-'                    <Url>https://'.$this->getConfig('Server', '').'/Microsoft-Server-ActiveSync</Url>',
-'                    <Name>https://'.$this->getConfig('Server', '').'/Microsoft-Server-ActiveSync</Name>',
+'                    <Url>https://'.$oSettings->Server.'/Microsoft-Server-ActiveSync</Url>',
+'                    <Name>https://'.$oSettings->Server.'/Microsoft-Server-ActiveSync</Name>',
 '                </Server>',
 '            </Settings>',
 '        </Action>'
@@ -206,6 +208,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 
         /** @var \Aurora\Modules\Licensing\Module */
         $oLicensing = \Aurora\System\Api::GetModule('Licensing');
+        $oSettings = $this->getModuleSettings();
 
         $bEnableModuleForUser = false;
 
@@ -225,14 +228,14 @@ class Module extends \Aurora\System\Module\AbstractModule
         $mUsersFreeSlots = $oLicensing->IsTrial('ActiveServer') ||  $oLicensing->IsUnlim('ActiveServer') ? 'Unlim' : $iFreeSlots;
 
         return array(
-            'EnableModule' => !$this->getConfig('Disabled', false),
+            'EnableModule' => !$oSettings->Disabled,
             'EnableModuleForUser' => $bEnableModuleForUser,
-            'EnableForNewUsers' => $this->getConfig('EnableForNewUsers', false),
+            'EnableForNewUsers' => $oSettings->EnableForNewUsers,
             'UsersCount' => $this->GetUsersCount(),
             'LicensedUsersCount' => (int) $mLicensedUsersCount,
             'UsersFreeSlots' => $mUsersFreeSlots,
-            'Server' => $this->getConfig('Server', ''),
-            'LinkToManual' => $this->getConfig('LinkToManual', '')
+            'Server' => $oSettings->Server,
+            'LinkToManual' => $oSettings->LinkToManual
         );
     }
 
