@@ -14,6 +14,8 @@ use Aurora\Api;
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2023, Afterlogic Corp.
  *
+ * @property Settings $oModuleSettings
+ *
  * @package Modules
  */
 class Module extends \Aurora\System\Module\AbstractModule
@@ -91,7 +93,6 @@ class Module extends \Aurora\System\Module\AbstractModule
         $iUserId = isset($mResult) && (int) $mResult > 0 ? (int) $mResult : 0;
         if ($iUserId > 0) {
             $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($iUserId);
-            $oSettings = $this->getModuleSettings();
 
             if ($oUser) {
                 if ($this->getFreeUsersSlots() < 1) {
@@ -99,8 +100,8 @@ class Module extends \Aurora\System\Module\AbstractModule
                         $oUser->setExtendedProp(self::GetName() . '::Enabled', false);
                         \Aurora\Modules\Core\Module::Decorator()->UpdateUserObject($oUser);
                     }
-                } elseif ($oUser->{self::GetName() . '::Enabled'} !== $oSettings->EnableForNewUsers) {
-                    $oUser->setExtendedProp(self::GetName() . '::Enabled', $oSettings->EnableForNewUsers);
+                } elseif ($oUser->{self::GetName() . '::Enabled'} !== $this->oModuleSettings->EnableForNewUsers) {
+                    $oUser->setExtendedProp(self::GetName() . '::Enabled', $this->oModuleSettings->EnableForNewUsers);
                     \Aurora\Modules\Core\Module::Decorator()->UpdateUserObject($oUser);
                 }
             }
@@ -110,7 +111,6 @@ class Module extends \Aurora\System\Module\AbstractModule
     public function onAfterGetAutodiscover(&$aArgs, &$mResult)
     {
         $sEmail = $aArgs['Email'];
-        $oSettings = $this->getModuleSettings();
 
         $sResult = \implode("\n", array(
 '		<Culture>en:us</Culture>',
@@ -122,8 +122,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 '            <Settings>',
 '                <Server>',
 '                    <Type>MobileSync</Type>',
-'                    <Url>https://'.$oSettings->Server.'/Microsoft-Server-ActiveSync</Url>',
-'                    <Name>https://'.$oSettings->Server.'/Microsoft-Server-ActiveSync</Name>',
+'                    <Url>https://'.$this->oModuleSettings->Server.'/Microsoft-Server-ActiveSync</Url>',
+'                    <Name>https://'.$this->oModuleSettings->Server.'/Microsoft-Server-ActiveSync</Name>',
 '                </Server>',
 '            </Settings>',
 '        </Action>'
@@ -208,7 +208,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 
         /** @var \Aurora\Modules\Licensing\Module */
         $oLicensing = \Aurora\System\Api::GetModule('Licensing');
-        $oSettings = $this->getModuleSettings();
 
         $bEnableModuleForUser = false;
 
@@ -228,14 +227,14 @@ class Module extends \Aurora\System\Module\AbstractModule
         $mUsersFreeSlots = $oLicensing->IsTrial('ActiveServer') ||  $oLicensing->IsUnlim('ActiveServer') ? 'Unlim' : $iFreeSlots;
 
         return array(
-            'EnableModule' => !$oSettings->Disabled,
+            'EnableModule' => !$this->oModuleSettings->Disabled,
             'EnableModuleForUser' => $bEnableModuleForUser,
-            'EnableForNewUsers' => $oSettings->EnableForNewUsers,
+            'EnableForNewUsers' => $this->oModuleSettings->EnableForNewUsers,
             'UsersCount' => $this->GetUsersCount(),
             'LicensedUsersCount' => (int) $mLicensedUsersCount,
             'UsersFreeSlots' => $mUsersFreeSlots,
-            'Server' => $oSettings->Server,
-            'LinkToManual' => $oSettings->LinkToManual
+            'Server' => $this->oModuleSettings->Server,
+            'LinkToManual' => $this->oModuleSettings->LinkToManual
         );
     }
 
