@@ -56,6 +56,8 @@ class Module extends \Aurora\System\Module\AbstractModule
         return $this->oModuleSettings;
     }
 
+    /***** private functions *****/
+
     protected function getFreeUsersSlots()
     {
         $mResult = 0;
@@ -149,6 +151,18 @@ class Module extends \Aurora\System\Module\AbstractModule
         }
     }
 
+    protected function GetUsersCount()
+    {
+        return \Aurora\Modules\Core\Models\User::where('Properties->'.self::GetName() . '::Enabled', true)->count();
+    }
+
+    /***** private functions *****/
+
+    /***** public functions *****/
+
+    /**
+     * @return bool
+     */
     public function GetEnableModuleForCurrentUser()
     {
         $bResult = false;
@@ -201,11 +215,6 @@ class Module extends \Aurora\System\Module\AbstractModule
         }
 
         return $bResult;
-    }
-
-    protected function GetUsersCount()
-    {
-        return \Aurora\Modules\Core\Models\User::where('Properties->'.self::GetName() . '::Enabled', true)->count();
     }
 
     public function GetSettings()
@@ -265,6 +274,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 
     public function GetLicenseInfo()
     {
+        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+
         $mResult = false;
 
         /** @var \Aurora\Modules\Licensing\Module */
