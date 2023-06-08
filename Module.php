@@ -89,7 +89,7 @@ class Module extends \Aurora\System\Module\AbstractModule
             } elseif ($this->getFreeUsersSlots() < 0) {
                 $mResult = false;
                 Api::Log('Auth error: User limit exceeded, ActiveServer is disabled');
-            } elseif (!($oUser && $oUser->{self::GetName() . '::Enabled'})) {
+            } elseif (!($oUser && $oUser->getExtendedProp(self::GetName() . '::Enabled'))) {
                 $mResult = false;
                 Api::Log('Auth error: ActiveServer is not enabled for the user');
             }
@@ -104,11 +104,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 
             if ($oUser) {
                 if ($this->getFreeUsersSlots() < 1) {
-                    if ($oUser->{self::GetName() . '::Enabled'}) {
+                    if ($oUser->getExtendedProp(self::GetName() . '::Enabled')) {
                         $oUser->setExtendedProp(self::GetName() . '::Enabled', false);
                         \Aurora\Modules\Core\Module::Decorator()->UpdateUserObject($oUser);
                     }
-                } elseif ($oUser->{self::GetName() . '::Enabled'} !== $this->oModuleSettings->EnableForNewUsers) {
+                } elseif ($oUser->getExtendedProp(self::GetName() . '::Enabled') !== $this->oModuleSettings->EnableForNewUsers) {
                     $oUser->setExtendedProp(self::GetName() . '::Enabled', $this->oModuleSettings->EnableForNewUsers);
                     \Aurora\Modules\Core\Module::Decorator()->UpdateUserObject($oUser);
                 }
@@ -172,7 +172,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         if ($iUserId) {
             $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($iUserId);
             if ($oUser) {
-                $bResult = $oUser->{self::GetName() . '::Enabled'};
+                $bResult = $oUser->getExtendedProp(self::GetName() . '::Enabled');
             }
         }
 
@@ -187,7 +187,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($UserId);
         if ($oUser) {
             return array(
-                'EnableModule' => $oUser->{self::GetName() . '::Enabled'}
+                'EnableModule' => $oUser->getExtendedProp(self::GetName() . '::Enabled')
             );
         }
 
@@ -205,7 +205,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         $oLicensing = \Aurora\System\Api::GetModule('Licensing');
         $iLicensedUsersCount = (int) $oLicensing->GetUsersCount('ActiveServer');
         $iUsersCount = $this->GetUsersCount();
-        if (!$oLicensing->IsTrial('ActiveServer') && !$oLicensing->IsUnlim('ActiveServer') && $iUsersCount >= $iLicensedUsersCount && $EnableModule && !$oUser->{self::GetName() . '::Enabled'}) {
+        if (!$oLicensing->IsTrial('ActiveServer') && !$oLicensing->IsUnlim('ActiveServer') && $iUsersCount >= $iLicensedUsersCount && $EnableModule && !$oUser->getExtendedProp(self::GetName() . '::Enabled')) {
             throw new Exceptions\UserLimitExceeded(1, null, 'ActiveSync user limit exceeded.');
         }
 
@@ -230,7 +230,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         if ($iUserId) {
             $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($iUserId);
             if ($oUser) {
-                $bEnableModuleForUser = $oUser->{self::GetName() . '::Enabled'};
+                $bEnableModuleForUser = $oUser->getExtendedProp(self::GetName() . '::Enabled');
             }
         }
 
