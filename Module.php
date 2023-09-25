@@ -123,15 +123,15 @@ class Module extends \Aurora\System\Module\AbstractModule
         $sResult = \implode("\n", array(
 '		<Culture>en:us</Culture>',
 '        <User>',
-'            <DisplayName>'.$sEmail.'</DisplayName>',
-'            <EMailAddress>'.$sEmail.'</EMailAddress>',
+'            <DisplayName>' . $sEmail . '</DisplayName>',
+'            <EMailAddress>' . $sEmail . '</EMailAddress>',
 '        </User>',
 '        <Action>',
 '            <Settings>',
 '                <Server>',
 '                    <Type>MobileSync</Type>',
-'                    <Url>https://'.$this->oModuleSettings->Server.'/Microsoft-Server-ActiveSync</Url>',
-'                    <Name>https://'.$this->oModuleSettings->Server.'/Microsoft-Server-ActiveSync</Name>',
+'                    <Url>https://' . $this->oModuleSettings->Server . '/Microsoft-Server-ActiveSync</Url>',
+'                    <Name>https://' . $this->oModuleSettings->Server . '/Microsoft-Server-ActiveSync</Name>',
 '                </Server>',
 '            </Settings>',
 '        </Action>'
@@ -153,7 +153,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 
     protected function GetUsersCount()
     {
-        return \Aurora\Modules\Core\Models\User::where('Properties->'.self::GetName() . '::Enabled', true)->count();
+        return \Aurora\Modules\Core\Models\User::where('Properties->' . self::GetName() . '::Enabled', true)->count();
     }
 
     /***** private functions *****/

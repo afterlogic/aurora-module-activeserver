@@ -12,6 +12,4 @@ namespace Aurora\Modules\ActiveServer\Exceptions;
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2023, Afterlogic Corp.
  */
-class UserLimitExceeded extends \Aurora\System\Exceptions\ApiException
-{
-}
+class UserLimitExceeded extends \Aurora\System\Exceptions\ApiException {}
