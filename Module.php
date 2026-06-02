@@ -224,15 +224,8 @@ class Module extends \Aurora\System\Module\AbstractModule
         /** @var \Aurora\Modules\Licensing\Module */
         $oLicensing = \Aurora\System\Api::GetModule('Licensing');
 
-        $bEnableModuleForUser = false;
-
-        $iUserId = \Aurora\System\Api::getAuthenticatedUserId();
-        if ($iUserId) {
-            $oUser = \Aurora\Api::getUserById($iUserId);
-            if ($oUser) {
-                $bEnableModuleForUser = $oUser->getExtendedProp(self::GetName() . '::Enabled');
-            }
-        }
+        $oUser = \Aurora\System\Api::getAuthenticatedUser();
+        $bEnableModuleForUser = $oUser->getExtendedProp(self::GetName() . '::Enabled');
 
         $iFreeSlots = $this->getFreeUsersSlots();
         if ($iFreeSlots < 0) {
@@ -241,16 +234,21 @@ class Module extends \Aurora\System\Module\AbstractModule
         $mLicensedUsersCount = $oLicensing->IsTrial('ActiveServer') ||  $oLicensing->IsUnlim('ActiveServer') ? 'Unlim' : $oLicensing->GetUsersCount('ActiveServer');
         $mUsersFreeSlots = $oLicensing->IsTrial('ActiveServer') ||  $oLicensing->IsUnlim('ActiveServer') ? 'Unlim' : $iFreeSlots;
 
-        return array(
+        $result = [
             'EnableModule' => !$this->oModuleSettings->Disabled,
             'EnableModuleForUser' => $bEnableModuleForUser,
-            'EnableForNewUsers' => $this->oModuleSettings->EnableForNewUsers,
-            'UsersCount' => $this->GetUsersCount(),
-            'LicensedUsersCount' => (int) $mLicensedUsersCount,
-            'UsersFreeSlots' => $mUsersFreeSlots,
-            'Server' => $this->oModuleSettings->Server,
-            'LinkToManual' => $this->oModuleSettings->LinkToManual
-        );
+        ];
+
+        if ($oUser->isAdmin()) {
+            $result['EnableForNewUsers'] = $this->oModuleSettings->EnableForNewUsers;
+            $result['UsersCount'] = $this->GetUsersCount();
+            $result['LicensedUsersCount'] = (int) $mLicensedUsersCount;
+            $result['UsersFreeSlots'] = $mUsersFreeSlots;
+            $result['Server'] = $this->oModuleSettings->Server;
+            $result['LinkToManual'] = $this->oModuleSettings->LinkToManual;
+        }
+
+        return $result;
     }
 
     public function UpdateSettings($EnableModule, $EnableForNewUsers, $Server, $LinkToManual)
