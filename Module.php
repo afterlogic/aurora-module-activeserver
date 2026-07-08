@@ -118,23 +118,31 @@ class Module extends \Aurora\System\Module\AbstractModule
 
     public function onAfterGetAutodiscover(&$aArgs, &$mResult)
     {
-        $sEmail = $aArgs['Email'];
+        $sEmail = isset($aArgs['Email']) ? (string) $aArgs['Email'] : '';
+
+        // Check if email is valid
+        if (!\filter_var($sEmail, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
+
+        $sEmailXml = \htmlspecialchars($sEmail, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $sServer   = \htmlspecialchars((string) $this->oModuleSettings->Server, ENT_XML1 | ENT_QUOTES, 'UTF-8');
 
         $sResult = \implode("\n", array(
-'		<Culture>en:us</Culture>',
-'        <User>',
-'            <DisplayName>' . $sEmail . '</DisplayName>',
-'            <EMailAddress>' . $sEmail . '</EMailAddress>',
-'        </User>',
-'        <Action>',
-'            <Settings>',
-'                <Server>',
-'                    <Type>MobileSync</Type>',
-'                    <Url>https://' . $this->oModuleSettings->Server . '/Microsoft-Server-ActiveSync</Url>',
-'                    <Name>https://' . $this->oModuleSettings->Server . '/Microsoft-Server-ActiveSync</Name>',
-'                </Server>',
-'            </Settings>',
-'        </Action>'
+    '		<Culture>en:us</Culture>',
+    '        <User>',
+    '            <DisplayName>' . $sEmailXml . '</DisplayName>',
+    '            <EMailAddress>' . $sEmailXml . '</EMailAddress>',
+    '        </User>',
+    '        <Action>',
+    '            <Settings>',
+    '                <Server>',
+    '                    <Type>MobileSync</Type>',
+    '                    <Url>https://' . $sServer . '/Microsoft-Server-ActiveSync</Url>',
+    '                    <Name>https://' . $sServer . '/Microsoft-Server-ActiveSync</Name>',
+    '                </Server>',
+    '            </Settings>',
+    '        </Action>'
         ));
 
         $mResult = $mResult . $sResult;
